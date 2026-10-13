@@ -34,26 +34,26 @@ function isPositiveFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && value > 0
 }
 
-export function validateParcelInput(input: unknown): string[] {
+function validateParcelInput(input: unknown): string[] {
   const errors: string[] = []
 
   if (!input || typeof input !== 'object') {
-    return ['Parcel input is required.']
+    return ['Please enter your parcel details before calculating shipping.']
   }
 
   const parcel = input as Partial<ParcelInput>
-  const checks: Array<[keyof ParcelInput, string]> = [
-    ['lengthMm', 'Length'],
-    ['breadthMm', 'Breadth'],
-    ['heightMm', 'Height'],
-    ['weightKg', 'Weight'],
+  const checks: Array<[keyof ParcelInput, string, string]> = [
+    ['lengthMm', 'length', 'mm'],
+    ['breadthMm', 'breadth', 'mm'],
+    ['heightMm', 'height', 'mm'],
+    ['weightKg', 'weight', 'kg'],
   ]
 
-  for (const [field, label] of checks) {
+  for (const [field, label, unit] of checks) {
     const value = parcel[field]
 
     if (!isPositiveFiniteNumber(value)) {
-      errors.push(`${label} must be a finite number greater than zero.`)
+      errors.push(`Please enter a valid ${label} greater than 0 ${unit}.`)
     }
   }
 
@@ -67,13 +67,11 @@ export function calculateShipping(input: ParcelInput): ShippingResult {
     return { status: 'invalid-input', errors }
   }
 
-  const parcel = input as ParcelInput
-
-  if (parcel.weightKg > MAX_WEIGHT_KG) {
+  if (input.weightKg > MAX_WEIGHT_KG) {
     return { status: 'unavailable', reason: 'overweight' }
   }
 
-  const sortedParcel = sortAscending([parcel.lengthMm, parcel.breadthMm, parcel.heightMm])
+  const sortedParcel = sortAscending([input.lengthMm, input.breadthMm, input.heightMm])
 
   for (const option of PACKAGE_OPTIONS) {
     const sortedOption = sortAscending([option.lengthMm, option.breadthMm, option.heightMm])
