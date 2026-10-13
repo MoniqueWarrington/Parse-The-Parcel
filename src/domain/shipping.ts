@@ -1,12 +1,10 @@
-export type PackageType = 'Small' | 'Medium' | 'Large'
-
-export type PackageOption = {
-  type: PackageType
+type PackageOption = Readonly<{
+  type: 'Small' | 'Medium' | 'Large'
   lengthMm: number
   breadthMm: number
   heightMm: number
   priceCents: number
-}
+}>
 
 export type ParcelInput = {
   lengthMm: number
@@ -20,13 +18,13 @@ export type ShippingResult =
   | { status: 'unavailable'; reason: 'overweight' | 'oversized' }
   | { status: 'invalid-input'; errors: string[] }
 
-export const MAX_WEIGHT_KG = 25
+const MAX_WEIGHT_KG = 25
 
-export const PACKAGE_OPTIONS: PackageOption[] = [
+const PACKAGE_OPTIONS = [
   { type: 'Small', lengthMm: 200, breadthMm: 300, heightMm: 150, priceCents: 500 },
   { type: 'Medium', lengthMm: 300, breadthMm: 400, heightMm: 200, priceCents: 750 },
   { type: 'Large', lengthMm: 400, breadthMm: 600, heightMm: 250, priceCents: 850 },
-]
+] as const satisfies readonly PackageOption[]
 
 const sortAscending = (values: number[]): number[] => [...values].sort((a, b) => a - b)
 

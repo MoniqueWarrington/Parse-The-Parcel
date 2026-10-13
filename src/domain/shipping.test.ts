@@ -120,5 +120,15 @@ describe('calculateShipping', () => {
 
       expect(result.errors).toEqual([expectedErrors[field]])
     })
+
+    it('rejects a missing measurement with a helpful message', () => {
+      // @ts-expect-error Runtime validation must handle missing measurements.
+      const result = calculateShipping({ ...validInput, breadthMm: undefined })
+
+      expect(result).toEqual({
+        status: 'invalid-input',
+        errors: [expectedErrors.breadthMm],
+      })
+    })
   })
 })
